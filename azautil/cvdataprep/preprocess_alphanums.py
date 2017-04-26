@@ -56,7 +56,9 @@ def main():
 				os.mkdir(directory)
 			shutil.copyfile(os.path.join(args.dir, f),
                                 os.path.join(directory, os.path.basename(f)))
-			shutil.copyfile(image_path, os.path.join(directory, os.path.basename(image_path)))
+			image_save_path = os.path.join(directory, 
+						os.path.basename(image_path))
+			cv2.imwrite(image_save_path, image_rot)
 
 if __name__ == '__main__':
 	main()
