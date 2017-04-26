@@ -13,19 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 """Converts image data to TFRecords file format with Example protos.
-
-The image data set is expected to reside in JPEG files located in the
-following directory structure.
-
-	data_dir/label_0/image0.jpeg
-	data_dir/label_0/image1.jpg
-	...
-	data_dir/label_1/weird-image.jpeg
-	data_dir/label_1/my-image.jpeg
-	...
-
-where the sub-directory is the unique label associated with these images.
-
 This TensorFlow script converts the training and evaluation data into
 a sharded data set consisting of TFRecord files
 
@@ -71,6 +58,7 @@ import os
 import random
 import sys
 import threading
+import json
 
 import numpy as np
 import tensorflow as tf
@@ -135,9 +123,9 @@ def _convert_to_example(filename, image_buffer, label, text, height, width):
 			'image/filename': _bytes_feature(tf.compat.as_bytes(os.path.basename(filename))),
 			'image/encoded': _bytes_feature(tf.compat.as_bytes(image_buffer))}
 	# Add labels and texts to feature
-	for k,v in label:
+	for k,v in label.iteritems():
 		feature['image/' + k + '/label'] = _int64_feature(v)
-	for k,v in text:
+	for k,v in text.iteritems():
 		feature['image/' + k + '/text'] =  _bytes_feature(tf.compat.as_bytes(v))
 	# Build the example
 	example = tf.train.Example(features=tf.train.Features(feature=feature))
@@ -250,6 +238,8 @@ def _process_image_files_batch(coder, thread_index, ranges, name, filenames,
 		shard = thread_index * num_shards_per_batch + s
 		output_filename = '%s-%.5d-of-%.5d' % (name, shard, num_shards)
 		output_file = os.path.join(FLAGS.output_directory, output_filename)
+		if not os.path.exists(FLAGS.output_directory):
+		    os.mkdir(FLAGS.output_directory)
 		writer = tf.python_io.TFRecordWriter(output_file)
 
 		shard_counter = 0
@@ -285,7 +275,6 @@ def _process_image_files_batch(coder, thread_index, ranges, name, filenames,
 				(datetime.now(), thread_index, counter, num_files_in_thread))
 	sys.stdout.flush()
 
-# TODO
 def _process_image_files(name, filenames, texts, labels, num_shards):
 	"""Process and save list of images as TFRecord of Example protos.
 
@@ -357,7 +346,8 @@ def _find_image_files(data_dir):
 			for key in json_text.keys():
 				# Special key for image filename
 				if key == 'image':
-					filenames.append(json_text[key])
+					filename = os.path.join(data_dir, json_text[key])
+					filenames.append(filename)
 				else:
 					# Assume labels and texts have parallel structure
 					if key not in labels:
