@@ -61,7 +61,7 @@ def main():
 						os.path.join(train_dir, f))
 			# There may be multiple JSONs pointing to the same JPG
 			# so a JPG may have already been moved
-			if not os.path.isfile(os.path.join(train_dir, image_path)
+			if not os.path.isfile(os.path.join(train_dir, image_path)):
 				shutil.copyfile(os.path.join(args.dir, image_path),
 								os.path.join(train_dir, image_path))
 			count_train += 1
@@ -72,7 +72,7 @@ def main():
 						os.path.join(validation_dir, f))
 			# There may be multiple JSONs pointing to the same JPG
 			# so a JPG may have already been moved
-			if not os.path.isfile(os.path.join(validation_dir, image_path)
+			if not os.path.isfile(os.path.join(validation_dir, image_path)):
 				shutil.copyfile(os.path.join(args.dir, image_path),
 								os.path.join(validation_dir, image_path))
 			count_validate += 1
