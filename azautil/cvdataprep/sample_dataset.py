@@ -4,6 +4,7 @@
 #              70-30 split of training data and validation data
 
 import os
+import shutil
 import json
 import argparse
 import random
@@ -60,9 +61,9 @@ def main():
 						os.path.join(train_dir, f))
 			# There may be multiple JSONs pointing to the same JPG
 			# so a JPG may have already been moved
-			if os.path.isfile(os.path.join(args.dir, image_path)):
-				os.rename(os.path.join(args.dir, image_path),
-							os.path.join(train_dir, image_path))
+			if not os.path.isfile(os.path.join(train_dir, image_path)
+				shutil.copyfile(os.path.join(args.dir, image_path),
+								os.path.join(train_dir, image_path))
 			count_train += 1
 			
 		else:
@@ -71,10 +72,15 @@ def main():
 						os.path.join(validation_dir, f))
 			# There may be multiple JSONs pointing to the same JPG
 			# so a JPG may have already been moved
-                        if os.path.isfile(os.path.join(args.dir, image_path)):
-				os.rename(os.path.join(args.dir, image_path),
-							os.path.join(validation_dir, image_path))
+			if not os.path.isfile(os.path.join(validation_dir, image_path)
+				shutil.copyfile(os.path.join(args.dir, image_path),
+								os.path.join(validation_dir, image_path))
 			count_validate += 1
+	
+	# Delete the leftover JPG files
+	jpg_files = [pos_jpg for pos_jpg in os.listdir(args.dir) if pos_jpg.endswith('.jpg')]
+	for f in jpg_files:
+		os.remove(os.path.join(args.dir, f))
 
 if __name__ == '__main__':
     main()
