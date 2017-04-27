@@ -82,5 +82,7 @@ def main():
 	for f in jpg_files:
 		os.remove(os.path.join(args.dir, f))
 
+	print('Successfully sampled directory into %d train files and %d validation files' % (count_train, count_validate))
+
 if __name__ == '__main__':
     main()
