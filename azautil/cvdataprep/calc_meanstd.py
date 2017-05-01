@@ -31,6 +31,8 @@ def main():
 				image_path = os.path.join(args.dir, json_text['image'])
 			assert os.path.isfile(image_path)
 			image = cv2.imread(image_path)
+			if (len(arr) > 0):
+				image = cv2.resize(image, dsize=arr[-1].shape[:2]) # Janky fix
 			arr.append(image)
 			counter += 1
 
