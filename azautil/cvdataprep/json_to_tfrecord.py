@@ -358,7 +358,7 @@ def _find_image_files(data_dir):
 						labels[key] = []
 					texts[key].append(json_text[key])
 					try: 
-						label = lookup[key][json_text[key]] # Get index						
+						label = lookup[key][json_text[key]] # Get index	
 					except KeyError:
 						print('Error: %s not found in known classes' % key)
 						label = -1
